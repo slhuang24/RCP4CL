@@ -20,4 +20,4 @@ pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 -f https://download.py
 ├── [Your ACDC Path]
     └── data
 ```
-**Note: We will provide the complete training code after the paper is accepted.**
+**Note: More details, including the complete training code and additional dataset information, will be coming soon.**
