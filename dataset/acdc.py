@@ -61,14 +61,8 @@ class ACDCDataset(Dataset):
         img_s1 = blur(img_s1, p=0.5)
         cutmix_box1 = obtain_cutmix_box(self.size, p=0.5)
         img_s1 = torch.from_numpy(np.array(img_s1)).unsqueeze(0).float() / 255.0
-
-        if random.random() < 0.8:
-            img_s2 = transforms.ColorJitter(0.5, 0.5, 0.5, 0.25)(img_s2)
-        img_s2 = blur(img_s2, p=0.5)
-        cutmix_box2 = obtain_cutmix_box(self.size, p=0.5)
-        img_s2 = torch.from_numpy(np.array(img_s2)).unsqueeze(0).float() / 255.0
-
-        return img, img_s1, img_s2, cutmix_box1, cutmix_box2,id
+        
+        return img, img_s1, cutmix_box1
 
     def __len__(self):
         return len(self.ids)
