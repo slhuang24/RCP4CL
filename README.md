@@ -12,7 +12,7 @@ pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 -f https://download.py
 ### Dataset
 
 - ACDC: (https://github.com/HiLab-git/SSL4MIS/tree/master/data/ACDC)
-
+**xxxxxxxxxxxxxxxxxxxxxxxxx**
 
 ## Usage
 * We provide test code, data_split, and model for ACDC dataset.
