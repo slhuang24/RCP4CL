@@ -17,7 +17,7 @@ from util.utils import count_params, init_log
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--config', default="configs/acdc.yaml", type=str)
-parser.add_argument('--savemodel-path', type=str, default="./bestmodel/ACDC/3")
+parser.add_argument('--savemodel-path', type=str, default="./result/Unet/semi/epoch300,3")
 
 def main():
     args = parser.parse_args()
@@ -43,7 +43,7 @@ def main():
 
     if os.path.exists(os.path.join(args.savemodel_path, 'best.pth')):
         checkpoint = torch.load(os.path.join(args.savemodel_path, 'best.pth'))
-        model.load_state_dict(checkpoint['models'])
+        model.load_state_dict(checkpoint['model'])
 
         model.eval()
         first_total = 0.0
@@ -57,7 +57,7 @@ def main():
                 img = F.interpolate(img, (cfg['crop_size'], cfg['crop_size']), mode='bilinear', align_corners=False)
                 img = img.permute(1, 0, 2, 3)
 
-                pred = model(img)['out']
+                pred = model(img)
                 pred = F.interpolate(pred, (h, w), mode='bilinear', align_corners=False)
                 pred = pred.argmax(dim=1).unsqueeze(0)
 
