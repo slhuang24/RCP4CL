@@ -1,7 +1,10 @@
 from __future__ import division, print_function
+
+import numpy as np
 import torch
 import torch.nn as nn
-from collections import OrderedDict
+from torch.distributions.uniform import Uniform
+
 
 def kaiming_normal_init_weight(model):
     for m in model.modules():
@@ -10,14 +13,6 @@ def kaiming_normal_init_weight(model):
         elif isinstance(m, nn.BatchNorm3d):
             m.weight.data.fill_(1)
             m.bias.data.zero_()
-    return model
-
-
-
-def kaiming_normal_(model):
-    for m in model.modules():
-        if isinstance(m, nn.Conv2d):
-            nn.init.kaiming_normal_(m.weight)
     return model
 
 
@@ -48,20 +43,6 @@ class ConvBlock(nn.Module):
 
     def forward(self, x):
         return self.conv_conv(x)
-
-class FeatureHead(nn.Module):
-    def __init__(self, in_channels):
-        super(FeatureHead, self).__init__()
-        inter_channels = in_channels *4
-        self.feature_conv=nn.Sequential(
-            nn.Conv2d(in_channels, inter_channels, 3, padding=1, bias=False),
-            nn.BatchNorm2d(inter_channels),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-        )
-
-    def forward(self, x):
-        return self.feature_conv(x)
 
 
 class DownBlock(nn.Module):
@@ -167,12 +148,11 @@ class Decoder(nn.Module):
         x = self.up3(x, x1)
         x = self.up4(x, x0)
         output = self.out_conv(x)
-
         return output
 
 
 class UNet(nn.Module):
-    def __init__(self, in_chns, class_num,need_feature=False):
+    def __init__(self, in_chns, class_num):
         super(UNet, self).__init__()
 
         params = {'in_chns': in_chns,
@@ -184,14 +164,13 @@ class UNet(nn.Module):
 
         self.encoder = Encoder(params)
         self.decoder = Decoder(params)
-        self.need_feature=need_feature
 
     def forward(self, x, need_fp=False):
         feature = self.encoder(x)
-        result = OrderedDict()
+
         if need_fp:
-            outs= self.decoder([torch.cat((feat, nn.Dropout2d(0.5)(feat))) for feat in feature])
+            outs = self.decoder([torch.cat((feat, nn.Dropout2d(0.5)(feat))) for feat in feature])
             return outs.chunk(2)
+
         output = self.decoder(feature)
-        result['out']=output
-        return result
+        return output
